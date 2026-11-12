@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Say What You Expect</title>
+<style>
+  :root{
+    --green:#1E3A34; --green-deep:#16302B; --ink:#20302B; --muted:#5B6B64;
+    --paper:#FFFFFF; --wash:#F4F6F5; --line:#DDE4E1;
+    --accent:#F2C94C; --accent-soft:#FBF0D2;
+    --right:#2E7D4F; --right-soft:#EAF4EE;
+    --wrong:#A93B2E; --wrong-soft:#F9ECEA;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
+  body{margin:0;font-family:Georgia,"Times New Roman",serif;color:var(--ink);background:var(--wash);line-height:1.55}
+  header.hero{background:var(--green);color:#fff;padding:2.4rem 1.2rem 2rem}
+  .wrap{max-width:840px;margin:0 auto}
+  .kicker{font-family:-apple-system,"Segoe UI",Roboto,sans-serif;font-size:.78rem;letter-spacing:.08em;opacity:.85;margin:0 0 .5rem}
+  header.hero h1{font-size:1.9rem;line-height:1.2;margin:0 0 .6rem;font-weight:700}
+  header.hero p.lede{margin:0;max-width:60ch;opacity:.93}
+  main{padding:1.6rem 1.2rem 4rem}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:1.5rem 1.6rem;margin:1.2rem 0}
+  .stagechip{display:inline-block;background:var(--accent-soft);border:1px solid var(--accent);border-radius:999px;padding:.15rem .8rem;font-family:-apple-system,"Segoe UI",Roboto,sans-serif;font-size:.78rem;font-weight:600;color:var(--green-deep);margin-bottom:.6rem}
+  h2{font-size:1.35rem;margin:.2rem 0 .6rem}
+  h3{font-size:1.05rem;margin:1.2rem 0 .4rem}
+  .keybar{background:var(--accent-soft);border-left:5px solid var(--accent);padding:.7rem .9rem;border-radius:6px;margin:1rem 0;font-size:.97rem}
+  .strategy{background:var(--green);color:#fff;border-radius:10px;padding:1.2rem 1.3rem;margin:.4rem 0 1.2rem}
+  .strategy .label{font-family:-apple-system,"Segoe UI",Roboto,sans-serif;font-size:.74rem;letter-spacing:.09em;font-weight:700;color:var(--accent);margin:0 0 .35rem}
+  .strategy h3{margin:0 0 .45rem;font-size:1.2rem;color:#fff}
+  .strategy p{margin:.4rem 0;opacity:.95}
+  .case{background:var(--wash);border:1px solid var(--line);border-radius:8px;padding:1rem 1.1rem;margin:.9rem 0}
+  .case p{margin:.3rem 0}
+  .timeline{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-top:.8rem}
+  @media (max-width:620px){ .timeline{grid-template-columns:1fr} }
+  .tcol{background:#fff;border:1px solid var(--line);border-radius:8px;padding:.7rem .85rem}
+  .tcol h4{margin:0 0 .45rem;font-family:-apple-system,"Segoe UI",Roboto,sans-serif;font-size:.78rem;letter-spacing:.05em;color:var(--muted)}
+  .tcol dl{margin:0;font-family:-apple-system,"Segoe UI",Roboto,sans-serif;font-size:.88rem}
+  .tcol dt{color:var(--muted);float:left;clear:left;width:9.5rem}
+  .tcol dd{margin:0 0 .25rem 9.5rem;font-weight:700;color:var(--green-deep)}
+  .tcol.now{border-color:var(--accent);background:#FFFDF4}
+  .ask{border:1px solid var(--line);border-radius:9px;padding:1rem 1.1rem;margin:.9rem 0;background:#fff}
+  .ask .q{font-weight:700;margin:0 0 .25rem;font-size:1.04rem}
+  .ask .hint{font-size:.89rem;color:var(--muted);margin:0 0 .55rem}
+  .pgrid{display:grid;grid-template-columns:11rem 1fr 1fr;gap:.45rem .6rem;align-items:center;margin-top:.7rem}
+  .pgrid .phead{font-family:-apple-system,"Segoe UI",Roboto,sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.03em;color:var(--green-deep);padding-bottom:.1rem}
+  .pgrid .plabel{font-weight:700;font-size:.97rem}
+  @media (max-width:640px){
+    .pgrid{grid-template-columns:1fr}
+    .pgrid .phead:empty{display:none}
+    .pgrid .phead{margin-top:.5rem}
+    .pgrid .plabel{margin-top:.6rem}
+  }
+  textarea{width:100%;font-family:Georgia,serif;font-size:1rem;padding:.6rem .7rem;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--ink);min-height:92px;resize:vertical}
+  textarea:disabled{background:var(--wash);color:var(--muted)}
+  .model{display:none;margin-top:1.1rem}
+  .model.show{display:block}
+  .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+  @media (max-width:620px){ .mgrid{grid-template-columns:1fr} }
+  .mbox{border-radius:6px;padding:.85rem .95rem;font-size:.95rem}
+  .mbox.good{background:var(--right-soft);border-left:4px solid var(--right)}
+  .mbox.bad{background:var(--wrong-soft);border-left:4px solid var(--wrong)}
+  .mbox b{font-family:-apple-system,"Segoe UI",Roboto,sans-serif;font-size:.76rem;letter-spacing:.05em;display:block;margin-bottom:.35rem;color:var(--green-deep)}
+  .mbox ul{margin:.3rem 0 .5rem;padding-left:1.1rem}
+  .mbox li{margin:.15rem 0}
+  .mbox p{margin:.45rem 0 0}
+  .checklist{margin-top:1.2rem}
+  .checklist p.lab{font-family:-apple-system,"Segoe UI",Roboto,sans-serif;font-size:.86rem;font-weight:700;color:var(--green-deep);margin:0 0 .45rem}
+  .ck{display:flex;gap:.65rem;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:.65rem .8rem;margin:.4rem 0;cursor:pointer;background:#fff}
+  .ck:hover{border-color:var(--green)}
+  .ck input{margin-top:.2rem;accent-color:var(--green);width:1.05rem;height:1.05rem;flex:none}
+  .ck.on{border-color:var(--right);background:var(--right-soft)}
+  .ck span b{display:block;font-size:1rem}
+  .ck span i{display:block;font-style:normal;font-size:.88rem;color:var(--muted);margin-top:.1rem}
+  button{font-family:-apple-system,"Segoe UI",Roboto,sans-serif;font-size:.95rem;font-weight:600;border-radius:8px;border:1px solid var(--green);padding:.6rem 1.2rem;cursor:pointer}
+  button.primary{background:var(--green);color:#fff}
+  button.primary:hover{background:var(--green-deep)}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  #closing{display:none}
+  .gapbox{background:var(--wash);border:1px solid var(--line);border-radius:8px;padding:.9rem 1rem;margin:.8rem 0}
+  .gapbox ul{margin:.4rem 0 0;padding-left:1.2rem}
+  .gapbox li{margin:.2rem 0}
+  .note{font-size:.85rem;color:var(--muted)}
+  .srmsg{position:absolute;left:-9999px}
+  footer{padding:1.5rem 1.2rem 2.5rem;color:var(--muted);font-size:.85rem;text-align:center}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="kicker">BEFORE THE CHECKPOINT</p>
+    <h1>Say what you expect</h1>
+    <p class="lede">You have just read how compensation fails and why some findings read as improvement when they are the opposite. Before you answer anything, commit to a prediction. It takes about five minutes.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="card">
+    <div class="strategy">
+      <p class="label">THE STRATEGY</p>
+      <h3>Predict before you check</h3>
+      <p>Say what you expect to find before you look. Then look. The gap between your prediction and the answer is specific, and it points at the reasoning that produced it rather than at a topic.</p>
+      <p>Reading an answer you never predicted teaches almost nothing, because you cannot tell whether you would have got there. Committing first makes the comparison mean something.</p>
+    </div>
+
+    <h2>Predict this client</h2>
+
+    <div class="case">
+      <p><strong>The situation.</strong> A client is four hours out from abdominal surgery. No medication has been given between the two sets of observations below.</p>
+      <div class="timeline">
+        <div class="tcol">
+          <h4>TWO HOURS AGO</h4>
+          <dl>
+            <dt>Heart rate</dt><dd>126/min</dd>
+            <dt>Blood pressure</dt><dd>108/70</dd>
+            <dt>Skin</dt><dd>Cool, pale</dd>
+            <dt>Urine output</dt><dd>20 mL/hr</dd>
+            <dt>Mental status</dt><dd>Alert</dd>
+          </dl>
+        </div>
+        <div class="tcol now">
+          <h4>NOW</h4>
+          <dl>
+            <dt>Heart rate</dt><dd>94/min</dd>
+            <dt>Blood pressure</dt><dd>?</dd>
+            <dt>Skin</dt><dd>?</dd>
+            <dt>Urine output</dt><dd>?</dd>
+            <dt>Mental status</dt><dd>?</dd>
+          </dl>
+        </div>
+      </div>
+      <p class="note" style="margin-top:.7rem">The heart rate has fallen. That is the only value you have.</p>
+    </div>
+
+    <div class="ask">
+      <p class="q">Fill in both columns for each finding.</p>
+      <p class="hint">Say which way each one would be moving. From memory, no scrolling back.</p>
+
+      <div class="pgrid">
+        <div class="phead"></div>
+        <div class="phead">If this client is recovering</div>
+        <div class="phead">If compensation is failing</div>
+
+        <div class="plabel">Blood pressure would</div>
+        <div><input type="text" id="r_bp" autocomplete="off" placeholder="be..."></div>
+        <div><input type="text" id="f_bp" autocomplete="off" placeholder="be..."></div>
+
+        <div class="plabel">Skin would</div>
+        <div><input type="text" id="r_sk" autocomplete="off" placeholder="be..."></div>
+        <div><input type="text" id="f_sk" autocomplete="off" placeholder="be..."></div>
+
+        <div class="plabel">Urine output would</div>
+        <div><input type="text" id="r_uo" autocomplete="off" placeholder="be..."></div>
+        <div><input type="text" id="f_uo" autocomplete="off" placeholder="be..."></div>
+
+        <div class="plabel">Mental status would</div>
+        <div><input type="text" id="r_ms" autocomplete="off" placeholder="be..."></div>
+        <div><input type="text" id="f_ms" autocomplete="off" placeholder="be..."></div>
+      </div>
+
+      <p class="q" style="margin-top:1.2rem">And why does the heart rate fall in each case?</p>
+      <p class="hint">One line each. This is the part that explains the rest.</p>
+      <div class="pgrid pgrid2">
+        <div class="plabel">The heart rate falls because</div>
+        <div><input type="text" id="r_hr" autocomplete="off" placeholder="in recovery..."></div>
+        <div><input type="text" id="f_hr" autocomplete="off" placeholder="in failure..."></div>
+      </div>
+    </div>
+
+    <p style="margin-top:1rem">
+      <button class="primary" id="revealbtn" type="button">Check my predictions</button>
+      <span class="note" id="hint2" style="margin-left:.6rem">Commit to every box before you look.</span>
+    </p>
+    <p class="note" id="err" role="alert" hidden></p>
+
+    <div class="model" id="model">
+      <div class="mgrid">
+        <div class="mbox good">
+          <b>IF THIS IS RECOVERY</b>
+          <ul>
+            <li>Blood pressure steady or rising</li>
+            <li>Skin warming, colour returning</li>
+            <li>Urine output rising above 30 mL/hr</li>
+            <li>Mental status unchanged, fully alert</li>
+          </ul>
+          <p>Everything moves the same way at once. The heart rate falls because the demand on it has fallen, so the findings that reflect perfusion improve alongside it.</p>
+        </div>
+        <div class="mbox bad">
+          <b>IF COMPENSATION IS FAILING</b>
+          <ul>
+            <li>Blood pressure falling</li>
+            <li>Skin cool, pale, mottled, refill slowing</li>
+            <li>Urine output falling further, toward none</li>
+            <li>Mental status declining, drowsy or confused</li>
+          </ul>
+          <p>The heart rate falls because the response producing it can no longer be sustained. Nothing else improves, because nothing was fixed.</p>
+        </div>
+      </div>
+
+      <div class="keybar" style="margin-top:1rem"><strong>The same number, two opposite meanings.</strong> A heart rate of 94 is not the finding. The direction of everything around it is the finding, and mental status is the earliest of those to move.</div>
+
+      <div class="checklist" id="checklist">
+        <p class="lab">Tick what your predictions actually said. Be strict with yourself.</p>
+        <label class="ck"><input type="checkbox" data-g="Predicting that a rising or steady blood pressure means recovery and a falling one means failure"><span><b>I predicted the blood pressure in both directions</b><i>Holding or rising in recovery, falling in failure</i></span></label>
+        <label class="ck"><input type="checkbox" data-g="Predicting warmer skin in recovery and persistent or worsening coolness in failure"><span><b>I predicted the skin in both directions</b><i>Warming in recovery, still cool or mottled in failure</i></span></label>
+        <label class="ck"><input type="checkbox" data-g="Predicting that urine output rises in recovery and falls further in failure"><span><b>I predicted the urine output in both directions</b><i>Rising in recovery, falling further in failure</i></span></label>
+        <label class="ck"><input type="checkbox" data-g="Predicting that mental status stays intact in recovery and declines in failure"><span><b>I predicted the mental status in both directions</b><i>Unchanged in recovery, declining in failure</i></span></label>
+        <label class="ck"><input type="checkbox" data-g="Saying that the findings move together, as one picture, rather than independently"><span><b>I said the findings move together</b><i>One picture, not four separate numbers</i></span></label>
+        <label class="ck"><input type="checkbox" data-g="Saying why the heart rate falls in each case, rather than only what it does"><span><b>I said why the heart rate falls in each case</b><i>Less demand in one, exhausted response in the other</i></span></label>
+        <p style="margin-top:1rem"><button class="primary" id="donebtn" type="button">See what my predictions missed</button></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="closing" aria-live="polite">
+    <span class="stagechip">WHAT THAT TOLD YOU</span>
+    <h2 id="verdicthead"></h2>
+    <p id="verdictbody"></p>
+
+    <div class="gapbox" id="gapbox" hidden>
+      <strong>Your predictions did not include</strong>
+      <ul id="gaplist"></ul>
+      <p class="note" style="margin:.5rem 0 0">These pieces only, not the whole section. Nothing is saved, so write them down.</p>
+    </div>
+
+    <h3>Why this works</h3>
+    <p>A prediction makes your reasoning visible before the answer can contaminate it. Once you have read the correct answer, you cannot tell whether you would have produced it, because it now looks obvious. Writing the prediction first removes that problem permanently.</p>
+    <p>It also changes what the answer teaches you. Instead of confirming something, it corrects something specific, and a specific correction is easier to act on than a general sense that you need to review.</p>
+
+    <h3>Carry it forward</h3>
+    <p>Before you read the answer to any practice question, say what you expect and why. Before you turn a page that reveals an outcome, say what you expect to find there. When your prediction and the answer disagree, the reason for the disagreement is the thing to study.</p>
+
+    <div class="keybar"><strong>Now take the checkpoint.</strong> It gives you a client whose heart rate has fallen, and asks what it means. You have just built the reasoning for that. Commit to an answer before you look at the feedback.</div>
+  </section>
+
+</main>
+
+<footer>Part 3 &middot; Learning to Study Nursing Content: An Active Approach &middot; Nothing entered on this page is stored or transmitted.</footer>
+<div class="srmsg" role="status" aria-live="polite" id="srlive"></div>
+
+<script>
+(function(){
+  "use strict";
+  function announce(m){ document.getElementById('srlive').textContent=m; }
+
+  document.querySelectorAll('.ck input').forEach(function(i){
+    i.addEventListener('change', function(){ i.closest('.ck').classList.toggle('on', i.checked); });
+  });
+
+  var fields = ['r_bp','f_bp','r_sk','f_sk','r_uo','f_uo','r_ms','f_ms','r_hr','f_hr'];
+
+  document.getElementById('revealbtn').addEventListener('click', function(){
+    var btn=this, err=document.getElementById('err');
+    var blank = fields.filter(function(id){ return document.getElementById(id).value.trim()===''; });
+    if(blank.length){
+      err.textContent='Fill in every box first, even roughly. ' + blank.length + ' still empty. Reading the answer before you have committed means you will never know whether you would have got there, which is the whole value of predicting.';
+      err.hidden=false;
+      announce('Some boxes are still empty.');
+      return;
+    }
+    err.hidden=true;
+    fields.forEach(function(id){ document.getElementById(id).disabled=true; });
+    document.getElementById('model').classList.add('show');
+    btn.disabled=true; btn.textContent='Compare, then tick what you predicted';
+    document.getElementById('hint2').textContent='Tick only what your own predictions actually said.';
+    document.getElementById('model').scrollIntoView({behavior:'smooth',block:'start'});
+    announce('Both versions are now shown. Tick what your predictions covered.');
+  });
+
+  document.getElementById('donebtn').addEventListener('click', function(){
+    var boxes=Array.prototype.slice.call(document.querySelectorAll('.ck input'));
+    var gaps=boxes.filter(function(b){ return !b.checked; }).map(function(b){ return b.dataset.g; });
+    var got=boxes.length-gaps.length;
+    var head=document.getElementById('verdicthead'), body=document.getElementById('verdictbody');
+
+    if(gaps.length===0){
+      head.textContent='Your predictions held in both directions';
+      body.textContent='You described two opposite pictures around the same heart rate and said why each one produces it. That is reading a trend rather than a value, and it is the judgment the checkpoint is about to ask for.';
+    } else if(got===0){
+      head.textContent='Neither prediction matched';
+      body.textContent='Worth finding out here rather than at a bedside. The section made sense while you were reading it, and predicting is what exposes the difference between following the reasoning and being able to run it yourself. What you are missing is listed below, and it is a short list.';
+    } else if(gaps.length<=2){
+      head.textContent='Your predictions were mostly right';
+      body.textContent='Most of the picture was yours. What is below did not appear in your version, and each one is a finding whose direction you would need in order to tell the two cases apart.';
+    } else {
+      head.textContent='Your predictions covered part of it';
+      body.textContent='You had some of the directions. The ones below are the findings you did not commit to, and without them a falling heart rate stays ambiguous.';
+    }
+
+    var box=document.getElementById('gapbox'), list=document.getElementById('gaplist');
+    if(gaps.length){
+      list.innerHTML='';
+      gaps.forEach(function(g){ var li=document.createElement('li'); li.textContent=g; list.appendChild(li); });
+      box.hidden=false;
+    } else { box.hidden=true; }
+
+    this.disabled=true; this.textContent='Your result is below';
+    var c=document.getElementById('closing');
+    c.style.display='block';
+    c.scrollIntoView({behavior:'smooth',block:'start'});
+    announce('Your result is shown below.');
+  });
+})();
+</script>
+</body>
+</html>
